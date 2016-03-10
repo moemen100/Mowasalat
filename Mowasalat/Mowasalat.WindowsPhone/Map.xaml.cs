@@ -64,6 +64,7 @@ namespace Mowasalat
                 MessageDialog error = new MessageDialog("Location is disabled in phone setting");
                 await error.ShowAsync();
             }
+            //***********************************
             L1.Add(new Vector(31.1982571669281, 29.9168192688971));
             L1.Add(new Vector(31.2195221020255, 29.9424814515894));
             L1.Add(new Vector(31.2326330949089, 29.9572216672541));
@@ -73,18 +74,44 @@ namespace Mowasalat
             L1.Add(new Vector(31.2434731932479, 29.9701884334006));
             L1.Add(new Vector(31.2455164771495, 29.9738086562737));
             line1 = new Mashroo3("Ma7tta", "sedipashr", L1);
-            for(int i=0;i<L1.Count-1; i++)
-            Map.Routes.Add(await line1.getLine());
+            Map.MapElements.Add(line1.getLine2());
+            //********************************
+            //  for (int i = 0; i < L1.Count - 1; i++)/// add line by routes
+            //   try
+            //{ Map.Routes.Add(await line1.getLine()); }
+            //catch (ArgumentException)
+            // {
+            // MessageDialog error = new MessageDialog("Eror in Conection");
+            //await error.ShowAsync();
+            // break;
+            //}
+            MapIcon m = new MapIcon();
+            m.Title = "Mmmmma";
+            m.ZIndex =5;
+            m.Location = new Geopoint(new BasicGeoposition { Latitude = 31.1982571669281, Longitude = 29.9168192688971 });  
+          // try
+           // {
+              //  Map.Routes.Add(await line1.getLine());///addline by points
+            //}
+            //catch(ArgumentException)
+            //{
+              //  MessageDialog error = new MessageDialog("Eror in Conection");
+               // await error.ShowAsync(); }
+                Map.MapElements.Add(m);
+            var obj = App.Current as App;
+           
             
+                distance.Text = "Distance" + obj.dist;
         }
         private async void Getlocation_Click(object sender, RoutedEventArgs e)
-        {
+        {//**************************
             var myPosition = new Windows.Devices.Geolocation.BasicGeoposition();
-            myPosition.Latitude = 31.1982571669281;
+            myPosition.Latitude = 31.1982571669281;/// add the point you where you want the map to be directed to when click get location if gps didn't work on your app
             myPosition.Longitude = 29.9168192688971;
             var myPoint = new Windows.Devices.Geolocation.Geopoint(myPosition);
             if (await Map.TrySetViewAsync(myPoint, 18D))
             { }
+            //************************************
         }
 
         private void SetLocation_Click(object sender, RoutedEventArgs e)

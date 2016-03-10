@@ -27,6 +27,8 @@ namespace Mowasalat
     {
 #if WINDOWS_PHONE_APP
         private TransitionCollection transitions;
+
+        public double dist { get; internal set; }
 #endif
 
         /// <summary>

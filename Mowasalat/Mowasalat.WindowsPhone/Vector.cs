@@ -36,9 +36,21 @@ namespace Mowasalat
         }
         public Vector subtract(Vector vector)
         {
-           Latitude -= vector.Latitude;
-            Longtitude -= vector.Longtitude;
+            Latitude-= vector.Latitude;
+            Longtitude-= vector.Longtitude;
             return this;
+
+        }
+        public float distancevector(Vector vector)
+        {
+            
+            double earthRadius = 6371000; //meters
+            double dLat =  (Math.PI / 180) * (vector.Latitude- Latitude ); 
+            double dLng = (Math.PI / 180) * (vector.Longtitude- Longtitude );
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                       Math.Cos((Math.PI / 180) * (vector.Latitude)) * Math.Cos((Math.PI / 180) * (Latitude)) *
+                       Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
+            return (float)(earthRadius * (2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a))));
 
         }
         public Double getLatitude()
