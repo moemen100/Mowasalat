@@ -51,7 +51,37 @@ namespace wasalney
 
             //await SyncAsync(); // offline sync
         }
+        private async void Sync_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            try
+            {
+                items = await todoTable
+                   .Where(todoItem => todoItem.Complete == false)
+                   .ToCollectionAsync();
+                // if(items.Last().Id.Equals(//count of the list on the file)-1)
+                //{ MessageDialog error = new MessageDialog("You are updated to our last data base").ShowAsync();
+                //            return;       }
+                for (int i = L1.Count; i < items.Count; i++)
+                {
 
+                    L1.Add(new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude, items.ElementAt(i).place));
+
+                }
+                line1 = new Mashroo3("Ma7tta", "sedipashr", L1);
+
+            }
+            catch (System.Net.Http.HttpRequestException)
+            {
+                await new MessageDialog("No Connection").ShowAsync();
+            }
+            catch (MobileServiceInvalidOperationException)
+            {
+                await new MessageDialog("Error loading items").ShowAsync();
+            }
+
+
+
+        }
         private async Task RefreshTodoItems()
         {
             
@@ -62,7 +92,7 @@ namespace wasalney
                 items = await todoTable
                     .Where(todoItem => todoItem.Complete == false)
                     . ToCollectionAsync();
-                ListItems.ItemsSource = items;
+               // ListItems.ItemsSource = items;
                 for(int i=0; i<items.Count;i++)
                 {
                     L1.Add(new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude,items.ElementAt(i).place));
@@ -70,7 +100,7 @@ namespace wasalney
                 }
                 line1 = new Mashroo3("Ma7tta", "sedipashr", L1);
                 Map.MapElements.Add(line1.getLine2());
-                this.ButtonSave.IsEnabled = true;
+              //  this.ButtonSave.IsEnabled = true;
             }
             catch (System.Net.Http.HttpRequestException )
             {
@@ -92,19 +122,19 @@ namespace wasalney
             // responds, the item is removed from the list.
             await todoTable.UpdateAsync(item);
             items.Remove(item);
-            ListItems.Focus(Windows.UI.Xaml.FocusState.Unfocused);
+           // ListItems.Focus(Windows.UI.Xaml.FocusState.Unfocused);
 
             //await SyncAsync(); // offline sync
         }
 
         private async void ButtonRefresh_Click(object sender, RoutedEventArgs e)
         {
-            ButtonRefresh.IsEnabled = false;
+            //ButtonRefresh.IsEnabled = false;
 
             //await SyncAsync(); // offline sync
           //  await RefreshTodoItems();
 
-            ButtonRefresh.IsEnabled = true;
+            //ButtonRefresh.IsEnabled = true;
             //var myPosition = new Windows.Devices.Geolocation.BasicGeoposition();
             //myPosition.Latitude = 31.1982571669281;/// add the point you where you want the map to be directed to when click get location if gps didn't work on your app
             //myPosition.Longitude = 29.9168192688971;

@@ -4,5 +4,6 @@ namespace wasalney
 {
     public sealed partial class MainPage : Page
     {
+       
     }
 }
