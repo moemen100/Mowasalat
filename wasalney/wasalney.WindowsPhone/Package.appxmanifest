@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="67964eb9-1e90-4777-9736-e0cf20c2b755" Publisher="CN=moemen" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="67964eb9-1e90-4777-9736-e0cf20c2b755" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="1010e1f1-6014-4024-afb5-e54464d2e64b" Publisher="CN=test" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="1010e1f1-6014-4024-afb5-e54464d2e64b" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Mowasalat.WindowsPhone</DisplayName>
-    <PublisherDisplayName>moemen</PublisherDisplayName>
+    <DisplayName>wasalney.WindowsPhone</DisplayName>
+    <PublisherDisplayName>Mobile Services</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>
@@ -15,8 +15,8 @@
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Mowasalat.WindowsPhone.App">
-      <m3:VisualElements DisplayName="Mowasalat.WindowsPhone" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="Mowasalat.WindowsPhone" ForegroundText="light" BackgroundColor="transparent">
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="wasalney.WindowsPhone.App">
+      <m3:VisualElements DisplayName="wasalney.WindowsPhone" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="wasalney.WindowsPhone" ForegroundText="light" BackgroundColor="transparent">
         <m3:DefaultTile Wide310x150Logo="Assets\WideLogo.png" Square71x71Logo="Assets\Square71x71Logo.png">
         </m3:DefaultTile>
         <m3:SplashScreen Image="Assets\SplashScreen.png" />

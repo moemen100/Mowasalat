@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 
-namespace Mowasalat
+namespace wasalney.Utl
 {
     class PointList
     {
@@ -21,7 +21,7 @@ namespace Mowasalat
             {
                 new PointList
                 {
-                    
+
                     Points = new List<Geopoint>
                     {
                         new Geopoint(new BasicGeoposition{Latitude = 31.2176, Longitude = 029.9397}),
@@ -41,11 +41,11 @@ namespace Mowasalat
 
             try
             {
-                
+
                 foreach (Vector p in VectorPosition)
                 {
 
-                   
+
 
                     MyPoints.Add(new Geopoint(new BasicGeoposition { Latitude = p.getLatitude(), Longitude = p.getLongtitude() }));
                 }
@@ -69,12 +69,3 @@ namespace Mowasalat
 
     }
 }
-
-    
-
-
-  
-
-    
-
-

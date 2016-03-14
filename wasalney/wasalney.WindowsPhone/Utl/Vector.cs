@@ -4,28 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mowasalat
+namespace wasalney.Utl
 {
     public class Vector
     {
         private Double Latitude, Longtitude;
+        public String name { get; set; }
         public Vector()
         {
-            set(0, 0);
+            set(0, 0, name);
         }
-        public Vector(Double x, Double y)
+        public Vector(Double x, Double y, String Place)
         {
-            set(x, y);
+            set(x, y, Place);
         }
-        public void set(Double x, Double y)
+        public void set(Double x, Double y, String Place)
         {
             // TODO Auto-generated method stub
             Latitude = x;
             Longtitude = y;
+            name = Place;
         }
         public Vector(Vector vector)
         {
-            set(vector.Latitude, vector.Longtitude);
+            set(vector.Latitude, vector.Longtitude, vector.name);
         }
         public Vector add(Vector vector)
         {
@@ -36,17 +38,17 @@ namespace Mowasalat
         }
         public Vector subtract(Vector vector)
         {
-            Latitude-= vector.Latitude;
-            Longtitude-= vector.Longtitude;
+            Latitude -= vector.Latitude;
+            Longtitude -= vector.Longtitude;
             return this;
 
         }
         public float distancevector(Vector vector)
         {
-            
+
             double earthRadius = 6371000; //meters
-            double dLat =  (Math.PI / 180) * (vector.Latitude- Latitude ); 
-            double dLng = (Math.PI / 180) * (vector.Longtitude- Longtitude );
+            double dLat = (Math.PI / 180) * (vector.Latitude - Latitude);
+            double dLng = (Math.PI / 180) * (vector.Longtitude - Longtitude);
             double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
                        Math.Cos((Math.PI / 180) * (vector.Latitude)) * Math.Cos((Math.PI / 180) * (Latitude)) *
                        Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
@@ -68,13 +70,13 @@ namespace Mowasalat
         }
         public Vector setLongtitude(Double y)
         {
-           Longtitude = y;
+            Longtitude = y;
             return this;
         }
-        public bool equals(object Object )
+        public bool equals(object Object)
         {
             if (!(Object is Vector))
-		return false;
+                return false;
             Vector vec = (Vector)Object;
             if (vec.getLatitude() == this.getLatitude() && vec.getLongtitude() == this.getLongtitude())
                 return true;
@@ -85,5 +87,4 @@ namespace Mowasalat
 
 
     }
-
 }
