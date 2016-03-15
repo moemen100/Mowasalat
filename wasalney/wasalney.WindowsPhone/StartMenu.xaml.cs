@@ -67,6 +67,7 @@ namespace wasalney
         /// session.  The state will be null the first time a page is visited.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+           
         }
 
         /// <summary>
@@ -79,6 +80,7 @@ namespace wasalney
         /// serializable state.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+           
         }
 
         #region NavigationHelper registration
@@ -107,5 +109,15 @@ namespace wasalney
         }
 
         #endregion
+
+        private void search_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(Search1));
+        }
+
+        private void start_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(MainPage));
+        }
     }
 }

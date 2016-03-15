@@ -30,8 +30,8 @@
         <!--TODO: Content should be placed within the following grid-->
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
 
-            <Maps:MapControl x:Name="Map" Margin="0" Visibility="Collapsed"/>
             <ListView x:Name="places_menu" Height="100" Margin="0" Width="100"/>
+            <Maps:MapControl x:Name="Map" HorizontalAlignment="Left" Margin="74,38,0,0" VerticalAlignment="Top"/>
 
         </Grid>
     </Grid>

@@ -28,8 +28,8 @@
 
         <!--TODO: Content should be placed within the following grid-->
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <Button x:Name="start" Content="Wasalney" HorizontalAlignment="Left" Margin="100,153,0,0" VerticalAlignment="Top" Width="156" Height="49"/>
-            <Button x:Name="search" Content="search" HorizontalAlignment="Left" Margin="100,266,0,0" VerticalAlignment="Top" Width="156"/>
+            <Button x:Name="start" Content="Wasalney" HorizontalAlignment="Left" Margin="100,153,0,0" VerticalAlignment="Top" Width="156" Height="49" Click="start_Click"/>
+            <Button x:Name="search" Content="search" HorizontalAlignment="Left" Margin="100,266,0,0" VerticalAlignment="Top" Width="156" Click="search_Click"/>
 
         </Grid>
     </Grid>

@@ -13,11 +13,11 @@ namespace wasalney.Mwasala
     {
         public class Mowasla
         {
-            protected int i = 0;
+           
             protected String Endadress;
             protected String Startadress;
-            protected List<Vector> Pointsposition;
-            protected Color color;
+             protected List<Vector> Pointsposition;
+            protected Color color=Colors.Yellow;
             public Mowasla(String Startadress, System.String Endadress, List<Vector> Pointsposition)
             {
                 this.Startadress = Startadress;
@@ -26,23 +26,27 @@ namespace wasalney.Mwasala
 
 
             }
-            public async Task<MapRouteView> getLine()
+        public Mowasla()
+        { }
+            public async Task<MapRouteView> getLine(int i)
             {
                 MapPolyline shape1 = new MapPolyline();
 
-                List<BasicGeoposition> positions = new List<BasicGeoposition>();
-                foreach (var p in Pointsposition)
-                    positions.Add(new BasicGeoposition() { Latitude = p.getLatitude(), Longitude = p.getLongtitude() });
-                Geopoint startPoint = new Geopoint(positions.ElementAt(i));
-                i++;
-                Geopoint endPoint = new Geopoint(positions.ElementAt(i));
-                MapRouteFinderResult Route = await MapRouteFinder.GetDrivingRouteAsync(startPoint, endPoint, MapRouteOptimization.Time, MapRouteRestrictions.None, 290);
+                
+            if (i != 0)
+            {
+                Geopoint startPoint = new Geopoint(new BasicGeoposition() { Latitude = Pointsposition.ElementAt(i-1).getLatitude(), Longitude = Pointsposition.ElementAt(i-1).getLongtitude() });
+                
+                Geopoint endPoint = new Geopoint(new BasicGeoposition() { Latitude = Pointsposition.ElementAt(i).getLatitude(), Longitude = Pointsposition.ElementAt(i).getLongtitude() });
+                MapRouteFinderResult Route = await MapRouteFinder.GetWalkingRouteAsync(startPoint, endPoint);
                 MapRouteView viewOfRoute = new MapRouteView(Route.Route);
                 viewOfRoute.RouteColor = color;
-
-
-
                 return viewOfRoute;
+            }
+            return null;
+                
+            
+           
             }
             public MapPolyline getLine2()
             {

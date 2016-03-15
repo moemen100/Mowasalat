@@ -143,10 +143,10 @@ namespace wasalney
            // { }
         }
 
-        private async void ButtonSave_Click(object sender, RoutedEventArgs e)
+        private  void Add_Click(object sender, RoutedEventArgs e)
         {
-            
-           
+
+            Frame.Navigate(typeof(ADD));
         }
 
         private async void CheckBoxComplete_Checked(object sender, RoutedEventArgs e)
