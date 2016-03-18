@@ -16,7 +16,7 @@ namespace wasalney.Mwasala
            
             protected String Endadress;
             protected String Startadress;
-             protected List<Vector> Pointsposition;
+             public List<Vector> Pointsposition;
             protected Color color=Colors.Yellow;
             public Mowasla(String Startadress, System.String Endadress, List<Vector> Pointsposition)
             {

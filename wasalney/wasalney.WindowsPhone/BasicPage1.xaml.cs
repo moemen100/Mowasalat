@@ -15,8 +15,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using wasalney.Mwasala;
-using wasalney.Utl;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -25,12 +23,12 @@ namespace wasalney
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class Search1 : Page
+    public sealed partial class BasicPage1 : Page
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        public Search1()
+        public BasicPage1()
         {
             this.InitializeComponent();
 
@@ -82,59 +80,7 @@ namespace wasalney
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
         }
-        private List<Mowasla> k = new List<Mowasla>();
-private void search()
-        { Queue<Mowasla> open = new Queue<Mowasla>();
-            Queue<Mowasla> open2 = new Queue<Mowasla>();
-            Vector Start=new Vector();
-            Vector end = new Vector();
-            double dist=0;
-            double diste = 0;
-            Vector near;
-            Vector neare;
-            bool reached=false;
-            foreach (Mowasla M in k)
-            {foreach (Vector V in M.Pointsposition)
-                {if(dist==0)
-                    dist=V.distancevector(Start);
-                    if (V.distancevector(Start) <= dist||dist<350)
-                    {
-                        
-                        if (open.Count != 0&&(int)dist!=(int)V.distancevector(Start)&&dist>350)
-                            open.Dequeue();
-                        open.Enqueue(M);
-                        dist = V.distancevector(Start);
-                        near = V;
 
-                    }
-                    
-                        if (diste == 0)
-                            diste = V.distancevector(end);
-
-                        if (V.distancevector(end) <= diste || diste < 350)
-                        {
-
-                            if (open2.Count != 0 && (int)diste != (int)V.distancevector(end) && diste > 350)
-                                open2.Dequeue();
-                            open2.Enqueue(M);
-                            diste = V.distancevector(end);
-                            neare = V;
-
-                        
-                    }
-
-
-                }
-            }
-            foreach (Mowasla have in open2)
-                if (open.Contains(have)) 
-            {
-
-                   //showroutes of both el mowaslla wal ragel yroo7 azzay
-            }
-
-
-        }
         #region NavigationHelper registration
 
         /// <summary>

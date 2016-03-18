@@ -112,7 +112,7 @@ namespace wasalney
 
         private void search_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(Search1));
+            Frame.Navigate(typeof(Search));
         }
 
         private void start_Click(object sender, RoutedEventArgs e)
