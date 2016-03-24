@@ -24,6 +24,10 @@ using wasalney.Utl;
 using Windows.Services.Maps;
 using Microsoft.WindowsAzure.MobileServices;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.MobileServices.SQLiteStore;
+using Microsoft.WindowsAzure.MobileServices.Sync;
+using System.Net.NetworkInformation;
+using Windows.Storage.Streams;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -34,6 +38,7 @@ namespace wasalney
     /// </summary>
     public sealed partial class ADD : Page
     {
+        private IMobileServiceSyncTable<Mowaslat> todoTable = App.MobileService.GetSyncTable<Mowaslat>(); // offline sync
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
         public ADD()
@@ -52,14 +57,14 @@ namespace wasalney
         {
             get { return this.navigationHelper; }
 
-            
-    }
 
-    /// <summary>
-    /// Gets the view model for this <see cref="Page"/>.
-    /// This can be changed to a strongly typed view model.
-    /// </summary>
-    public ObservableDictionary DefaultViewModel
+        }
+
+        /// <summary>
+        /// Gets the view model for this <see cref="Page"/>.
+        /// This can be changed to a strongly typed view model.
+        /// </summary>
+        public ObservableDictionary DefaultViewModel
         {
             get { return this.defaultViewModel; }
 
@@ -78,6 +83,9 @@ namespace wasalney
         /// session.  The state will be null the first time a page is visited.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+
+            map.Style = MapStyle.None;
+            
             Geolocator geolocator = new Geolocator();
             geolocator.DesiredAccuracyInMeters = 50;
             try
@@ -94,9 +102,16 @@ namespace wasalney
                 var myPosition = new Windows.Devices.Geolocation.BasicGeoposition();
                 myPosition.Latitude = 31.1982571669281;/// add the point you where you want the map to be directed to when click get location if gps didn't work on your app
                 myPosition.Longitude = 29.9168192688971;
-                 var myPoint = new Windows.Devices.Geolocation.Geopoint(myPosition);
-              
+                var myPoint = new Windows.Devices.Geolocation.Geopoint(myPosition);
+
             }
+            if (!App.MobileService.SyncContext.IsInitialized)
+                {
+
+                    var store = new MobileServiceSQLiteStore("localsync.db");
+                    store.DefineTable<Mowaslat>();
+                    await App.MobileService.SyncContext.InitializeAsync(store);
+                }
         }
 
         /// <summary>
@@ -137,31 +152,30 @@ namespace wasalney
         }
 
         #endregion
-
-        private  void DeleteLast_Click(object sender, RoutedEventArgs e)
+        String Type;
+        private void DeleteLast_Click(object sender, RoutedEventArgs e)
         {
-            if(map.MapElements.Count!=0)
-            map.MapElements.Remove(map.MapElements.Last());
-            if (map.Routes .Count!=0)
+            if (map.MapElements.Count != 0)
+                map.MapElements.Remove(map.MapElements.Last());
+            if (map.Routes.Count != 0)
                 map.Routes.RemoveAt(map.Routes.IndexOf(map.Routes.Last()));
             if (L1.Count != 0)
                 L1.RemoveAt(L1.IndexOf(L1.Last()));
-                if (i>0)
-            i--;
+            if (i > 0)
+                i--;
 
         }
-        
-        private IMobileServiceTable<Mowaslat> todoTable = App.MobileService.GetTable<Mowaslat>();
+
         private async void Finsh_Click(object sender, RoutedEventArgs e)
         {
-           
+
 
             foreach (Vector v in L1)
             {
-                
+
                 if (L1.IndexOf(v) == 0)
                 {
-                    var todoItem = new Mowaslat { place = v.name, Latitude = v.getLatitude(), Longtude = v.getLongtitude(), Complete = true, iden = 0 };
+                    var todoItem = new Mowaslat { place = v.name, Latitude = v.getLatitude(), Longtude = v.getLongtitude(), Complete = true, iden = 0, Type = Type };
                     try { await InsertTodoItem(todoItem); }
                     catch (System.Net.Http.HttpRequestException)
                     {
@@ -169,7 +183,7 @@ namespace wasalney
                         return;
                     }
                     // System.Net.Http.HttpRequestException
-                    catch (MobileServiceInvalidOperationException )
+                    catch (MobileServiceInvalidOperationException)
                     {
                         await new MessageDialog("Error loading items").ShowAsync();
                         return;
@@ -177,7 +191,7 @@ namespace wasalney
                 }
                 if (L1.IndexOf(v) == L1.Count - 1)
                 {
-                    var todoItem = new Mowaslat { place = v.name, Latitude = v.getLatitude(), Longtude = v.getLongtitude(), Complete = true, iden = 2 };
+                    var todoItem = new Mowaslat { place = v.name, Latitude = v.getLatitude(), Longtude = v.getLongtitude(), Complete = true, iden = 2 , Type = Type };
                     try { await InsertTodoItem(todoItem); }
                     catch (System.Net.Http.HttpRequestException)
                     {
@@ -185,7 +199,7 @@ namespace wasalney
                         return;
                     }
                     // System.Net.Http.HttpRequestException
-                    catch (MobileServiceInvalidOperationException )
+                    catch (MobileServiceInvalidOperationException)
                     {
                         await new MessageDialog("Error loading items").ShowAsync();
                         return;
@@ -194,7 +208,7 @@ namespace wasalney
                 if (L1.IndexOf(v) != 0 && L1.IndexOf(v) != L1.Count - 1)
 
                 {
-                    var todoItem = new Mowaslat { place = v.name, Latitude = v.getLatitude(), Longtude = v.getLongtitude(), Complete = true, iden = 1 };
+                    var todoItem = new Mowaslat { place = v.name, Latitude = v.getLatitude(), Longtude = v.getLongtitude(), Complete = true, iden = 1,Type=Type };
                     try { await InsertTodoItem(todoItem); }
                     catch (System.Net.Http.HttpRequestException)
                     {
@@ -202,36 +216,38 @@ namespace wasalney
                         return;
                     }
                     // System.Net.Http.HttpRequestException
-                    catch (MobileServiceInvalidOperationException )
+                    catch (MobileServiceInvalidOperationException)
                     {
                         await new MessageDialog("Error loading items").ShowAsync();
                         return;
                     }
                 }
-               
+
 
             }
+
             await new MessageDialog("The ROute is added to Data Base").ShowAsync();
+            await Push();
             Frame.Navigate(typeof(StartMenu));
         }
 
 
 
         private async Task InsertTodoItem(Mowaslat todoItem)
-{
-    // This code inserts a new TodoItem into the database. When the operation completes
-    // and Mobile App backend has assigned an Id, the item is added to the CollectionView.
-    await todoTable.InsertAsync(todoItem);
-     
+        {
+            // This code inserts a new TodoItem into the database. When the operation completes
+            // and Mobile App backend has assigned an Id, the item is added to the CollectionView.
+            await todoTable.InsertAsync(todoItem);
+           // await SyncAsync();
 
-    //await SyncAsync(); // offline sync
-}
-private void Delete_Route_Click(object sender, RoutedEventArgs e)
+            //await SyncAsync(); // offline sync
+        }
+        private void Delete_Route_Click(object sender, RoutedEventArgs e)
         {
             map.MapElements.Clear();
             map.Routes.Clear();
             L1.Clear();
-        i = 0;
+            i = 0;
         }
 
         private int i = 0;
@@ -241,8 +257,8 @@ private void Delete_Route_Click(object sender, RoutedEventArgs e)
         private async void map_MapTapped(MapControl sender, MapInputEventArgs args)
         {
             Geopoint Point = new Geopoint(new BasicGeoposition { Latitude = args.Location.Position.Latitude, Longitude = args.Location.Position.Longitude });
-            MapLocationFinderResult Place = await MapLocationFinder.FindLocationsAtAsync(Point );
-            if(Place.Locations.Count==0)
+            MapLocationFinderResult Place = await MapLocationFinder.FindLocationsAtAsync(Point);
+            if (Place.Locations.Count == 0)
             {
                 MessageDialog error = new MessageDialog("Can't add this point PLease try again");
                 await error.ShowAsync();
@@ -250,24 +266,158 @@ private void Delete_Route_Click(object sender, RoutedEventArgs e)
             }
             L1.Add(new Vector(Point.Position.Latitude, Point.Position.Longitude, Place.Locations.ElementAt(0).Address.Street));
             if (i > 0)
-            {
+            {if(Type.Equals("Other"))
                 M = new Mowasla(L1.ElementAt(0).name, L1.Last().name, L1);
-                if( M.getLine(i)!=null)
-                map.Routes.Add(await M.getLine(i));
+                if (Type.Equals("Bus"))
+                    M = new Bus(L1.ElementAt(0).name, L1.Last().name, L1);
+                if (Type.Equals("mashroo3"))
+                    M = new Mashroo3(L1.ElementAt(0).name, L1.Last().name, L1);
+                if (M.getLine(i) != null)
+                    map.Routes.Add(await M.getLine(i));
             }
-
+            LocalMapTileDataSource m = new LocalMapTileDataSource();
             Note = new MapIcon();
             Note.Title = Place.Locations.ElementAt(0).Address.Street;
-            
-            Note.Location = new Geopoint(new BasicGeoposition { Latitude =Point.Position.Latitude,Longitude=Point.Position.Longitude });
+            Note.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/pin.png"));
+            Note.Location = new Geopoint(new BasicGeoposition { Latitude = Point.Position.Latitude, Longitude = Point.Position.Longitude });
             map.MapElements.Add(Note);
-            
+
             i++;
         }
 
         private void MainMenu_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(StartMenu));
+        }
+        private async Task InitLocalStoreAsync()
+        {
+           
+
+            if (!App.MobileService.SyncContext.IsInitialized)
+                if (!NetworkInterface.GetIsNetworkAvailable())
+                {
+               
+                    var store = new MobileServiceSQLiteStore("localsync.db");
+                await new MessageDialog("No Connection").ShowAsync();
+                store.DefineTable<Mowaslat>();
+                await App.MobileService.SyncContext.InitializeAsync(store);
+            }
+
+            await SyncAsync();
+        }
+
+        private async Task SyncAsync()
+        {
+            String errorString = null;
+
+            try
+            {
+                await App.MobileService.SyncContext.PushAsync();
+                await todoTable.PullAsync("todoItems", todoTable.CreateQuery()); // first param is query ID, used for incremental sync
+            }
+
+            catch (MobileServicePushFailedException ex)
+            {
+                errorString = "Push failed because of sync errors: " +
+                  ex.PushResult.Errors.Count + " errors, message: " + ex.Message;
+            }
+            catch (Exception ex)
+            {
+                errorString = "Pull failed: " + ex.Message +
+                  "\n\nIf you are still in an offline scenario, " +
+                  "you can try your Pull again when connected with your Mobile Serice.";
+            }
+
+            if (errorString != null)
+            {
+                MessageDialog d = new MessageDialog(errorString);
+                await d.ShowAsync();
+            }
+        }
+        private async Task Push()
+        {
+            string errorString = null;
+
+            // Prevent extra clicking while Push is in progress
+           
+
+            try
+            {
+                await App.MobileService.SyncContext.PushAsync();
+            }
+            catch (MobileServicePushFailedException ex)
+            {
+                errorString = "Push failed because of sync errors: " +
+                  ex.PushResult.Errors.Count + " errors, message: " + ex.Message;
+            }
+            catch (Exception ex)
+            {
+                errorString = "Push failed: " + ex.Message +
+                  "\n\nIf you are still in an offline scenario, " +
+                  "you can try your Push again when connected with your Mobile Serice.";
+            }
+
+            if (errorString != null)
+            {
+                MessageDialog d = new MessageDialog(errorString);
+                await d.ShowAsync();
+            }
+
+            await new MessageDialog("The ROute is added to Data Base").ShowAsync();
+        }
+        private void Optin_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            if (Ca.Visibility == Visibility.Visible)
+                Ca.Visibility = Visibility.Collapsed;
+            if (Ca.Visibility == Visibility.Collapsed)
+                Ca.Visibility = Visibility.Visible;
+
+        }
+        private void button_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            if (Normal.IsChecked == true)
+                map.Style = MapStyle.Terrain;
+            if (Online.IsChecked == true)
+            {
+                var httpsource = new HttpMapTileDataSource("http://a.tile.openstreetmap.org/{zoomlevel}/{x}/{y}.png");
+                var ts = new MapTileSource(httpsource)
+                {
+                    Layer = MapTileLayer.BackgroundReplacement
+                };
+                map.Style = MapStyle.None;
+                map.TileSources.Add(ts);
+
+            }
+
+            if (Aeriel.IsChecked == true)
+            {
+                map.Style = MapStyle.Aerial;
+            }
+            Ca.Visibility = Visibility.Collapsed;
+        }
+        private void button1_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            if (mashroo3.IsChecked == true)
+                Type = "mashroo3";
+            if (Bus.IsChecked == true)
+            {
+                var httpsource = new HttpMapTileDataSource("http://a.tile.openstreetmap.org/{zoomlevel}/{x}/{y}.png");
+                var ts = new MapTileSource(httpsource)
+                {
+                    Layer = MapTileLayer.BackgroundReplacement
+                };
+                map.Style = MapStyle.None;
+                map.TileSources.Add(ts);
+                Type = "Bus";
+            }
+
+            if (Other.IsChecked == true)
+            {
+                map.Style = MapStyle.Aerial;
+                Type = "other";
+            }
+            map.Style = MapStyle.Terrain;
+            Ca2.Visibility = Visibility.Collapsed;
         }
     }
 }

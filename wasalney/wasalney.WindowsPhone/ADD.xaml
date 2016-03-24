@@ -24,12 +24,12 @@
         </Grid.RowDefinitions>
 
         <!-- Title Panel -->
-        <StackPanel Grid.Row="0" Margin="19,0,0,478.833" Grid.RowSpan="2">
-            <TextBlock Text="MY APPLICATION" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
-            <Canvas HorizontalAlignment="Left" Height="49" Margin="0" Grid.RowSpan="2" VerticalAlignment="Top" Width="381">
+        <StackPanel Grid.Row="0" Margin="19,0,0,478.833" Grid.RowSpan="2" HorizontalAlignment="Left">
+            <Button Name="Optin" HorizontalAlignment="Right" Content="Map VIew" HorizontalContentAlignment="Center" Click="Optin_Click" ></Button>
+            <Canvas Height="auto" Margin="0" Grid.RowSpan="2" Width="381" VerticalAlignment="Top" HorizontalAlignment="Left">
 
-                <Button x:Name="DeleteLast" Content="Delete Last" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="DeleteLast_Click" Canvas.Left="256"/>
-                <Button x:Name="MainMenu" Content="Main menu" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="MainMenu_Click"/>
+                <Button x:Name="DeleteLast" Content="Delete Last" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="DeleteLast_Click" Canvas.Left="256" Margin="0,-13,0,0"/>
+                <Button x:Name="MainMenu" Content="Main menu" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="MainMenu_Click" Margin="0,-12,0,0"/>
 
             </Canvas>
         </StackPanel>
@@ -46,6 +46,23 @@
             <Button x:Name="Delete_Route" Content="Delete Route" HorizontalAlignment="Left" VerticalAlignment="Stretch" Click="Delete_Route_Click"/>
 
         </Grid>
+        <Canvas Name="Ca" Margin="0" Grid.Row="1" Background="Black" Visibility="Collapsed">
+            <Button x:Name="button" Content="Apply" Canvas.Left="146" Canvas.Top="502" Click="button_Click"/>
+            <StackPanel>
+                <RadioButton x:Name="Normal" Content="Normal" HorizontalAlignment="Left" Margin="0,0.5,0,0" Grid.Row="1" VerticalAlignment="Top" Height="99"/>
+                <RadioButton x:Name="Aeriel" Content="Aeriel" HorizontalAlignment="Left" Margin="0,0.5,0,0" Grid.Row="1" VerticalAlignment="Top" Height="108"/>
+                <RadioButton x:Name="Online" Content="Online" Height="101"/>
 
+            </StackPanel>
+        </Canvas>
+        <Canvas Name="Ca2" Margin="0" Grid.Row="1" Background="Black" Visibility="Visible">
+            <Button x:Name="apply" Content="Apply" Canvas.Left="146" Canvas.Top="502" Click="button1_Click"/>
+            <StackPanel>
+                <RadioButton x:Name="mashroo3" Content="mashroo3" HorizontalAlignment="Left" Margin="0,0.5,0,0" Grid.Row="1" VerticalAlignment="Top" Height="99"/>
+                <RadioButton x:Name="Bus" Content="Bus" HorizontalAlignment="Left" Margin="0,0.5,0,0" Grid.Row="1" VerticalAlignment="Top" Height="108"/>
+                <RadioButton x:Name="Other" Content="Other" Height="101"/>
+
+            </StackPanel>
+        </Canvas>
     </Grid>
 </Page>

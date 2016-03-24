@@ -17,6 +17,12 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using wasalney.Mwasala;
 using wasalney.Utl;
+using Windows.Devices.Geolocation;
+using Windows.Services.Maps;
+using Windows.UI;
+using Windows.UI.Xaml.Controls.Maps;
+using Windows.UI.Popups;
+using System.Threading.Tasks;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -67,8 +73,13 @@ namespace wasalney
         /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested and
         /// a dictionary of state preserved by this page during an earlier
         /// session.  The state will be null the first time a page is visited.</param>
-        private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
+       Vector end = new Vector();
+
+        private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            var obj = App.Current as App;
+            end = obj.pos[(int)e.NavigationParameter];
+            await search();
         }
 
         /// <summary>
@@ -82,56 +93,109 @@ namespace wasalney
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
         }
-        private List<Mowasla> k = new List<Mowasla>();
-private void search()
-        { Queue<Mowasla> open = new Queue<Mowasla>();
+        private List<Mowasla> k;
+        private  async Task search()
+        {
+            var obj = App.Current as App;
+            k = obj.mowasla;
+            Geolocator geolocator = new Geolocator();
+            geolocator.DesiredAccuracyInMeters = 50;
+             Vector Start=new Vector();
+            try
+            {
+                Geoposition postionlocator = await geolocator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
+                 Start = new Vector(postionlocator.Coordinate.Point.Position.Latitude, postionlocator.Coordinate.Point.Position.Longitude, "");
+                await Map.TrySetViewAsync(postionlocator.Coordinate.Point, 18D);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageDialog error = new MessageDialog("Location is disabled in phone setting");
+                await error.ShowAsync();
+                return;
+            }
+            Queue<Mowasla> open = new Queue<Mowasla>();
             Queue<Mowasla> open2 = new Queue<Mowasla>();
-            Vector Start=new Vector();
-            Vector end = new Vector();
-            double dist=0;
+           
+          
+            double dist = 0;
             double diste = 0;
-            Vector near;
+            Vector near=new Vector();
             Vector neare;
-            bool reached=false;
+            bool reached = false;
             foreach (Mowasla M in k)
-            {foreach (Vector V in M.Pointsposition)
-                {if(dist==0)
-                    dist=V.distancevector(Start);
-                    if (V.distancevector(Start) <= dist||dist<350)
+            {
+                foreach (Vector V in M.Pointsposition)
+                {
+                    if (dist == 0)
+                        dist = V.distancevector(Start);
+                    if (V.distancevector(Start) <= dist || dist < 350)
                     {
-                        
-                        if (open.Count != 0&&(int)dist!=(int)V.distancevector(Start)&&dist>350)
+
+                        if (open.Count != 0 && (int)dist != (int)V.distancevector(Start) && dist > 350)
                             open.Dequeue();
                         open.Enqueue(M);
                         dist = V.distancevector(Start);
                         near = V;
 
                     }
-                    
-                        if (diste == 0)
-                            diste = V.distancevector(end);
 
-                        if (V.distancevector(end) <= diste || diste < 350)
-                        {
+                    if (diste == 0)
+                        diste = V.distancevector(end);
 
-                            if (open2.Count != 0 && (int)diste != (int)V.distancevector(end) && diste > 350)
-                                open2.Dequeue();
-                            open2.Enqueue(M);
-                            diste = V.distancevector(end);
-                            neare = V;
+                    if (V.distancevector(end) <= diste || diste < 350)
+                    {
 
-                        
+                        if (open2.Count != 0 && (int)diste != (int)V.distancevector(end) && diste > 350)
+                            open2.Dequeue();
+                        open2.Enqueue(M);
+                        diste = V.distancevector(end);
+                        neare = V;
+
+
                     }
 
 
                 }
             }
+            dist = 0;
+            int i = 0;
+            Vector near2 = new Vector();
             foreach (Mowasla have in open2)
-                if (open.Contains(have)) 
-            {
+                if (open.Contains(have))
+                {
+                    foreach (Vector v in have.Pointsposition)
+                    {
+                        if (near2.distancevector(Start) > v.distancevector(Start) || i==0)
+                        {
+                           
+                            near2 = v;
+                           
+                        }
+                       
+                        if (i != 0)
+                            Map.Routes.Add(await have.getLine(i));
+                        i++;
+                       // dist = v.distancevector(Start);
+                    }
+                    i = 0;
+                    //Geopoint startPoint = new Geopoint(new BasicGeoposition() { Latitude  = Start.getLatitude(), Longitude = Start.getLongtitude() });
 
-                   //showroutes of both el mowaslla wal ragel yroo7 azzay
-            }
+                    //Geopoint endPoint = new Geopoint(new BasicGeoposition() { Latitude = near.getLatitude(), Longitude = near.getLongtitude() });
+                    //MapRouteFinderResult Route1 = await MapRouteFinder.GetWalkingRouteAsync(startPoint, endPoint);
+                    //MapRouteView viewOfRoute1 = new MapRouteView(Route1.Route);
+                    //viewOfRoute1.RouteColor = Colors.Gray; ;
+                    //  Map.Routes.Add(viewOfRoute1);
+                    //  for (int j = 1; j < have.Pointsposition.Count-1; j++)
+                    //  Map.Routes.Add( await have.getLine(j));
+                    MapRouteFinderResult Route = await MapRouteFinder.GetWalkingRouteAsync(new Geopoint(new BasicGeoposition() { Latitude = Start.getLatitude(), Longitude = Start.getLongtitude() }),
+
+           new Geopoint(new BasicGeoposition() { Latitude = near2.getLatitude(), Longitude = near2.getLongtitude() }));
+                    MapRouteView viewOfRoute = new MapRouteView(Route.Route);
+                    viewOfRoute.RouteColor = Colors.Black;
+                    Map.Routes.Add(viewOfRoute);
+                }
+           
+
 
 
         }
@@ -161,5 +225,10 @@ private void search()
         }
 
         #endregion
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(Search));
+        }
     }
 }

@@ -13,9 +13,9 @@ namespace wasalney.Mwasala
     {
         public class Mowasla
         {
-           
-            protected String Endadress;
-            protected String Startadress;
+
+        public String Endadress;
+        public String Startadress;
              public List<Vector> Pointsposition;
             protected Color color=Colors.Yellow;
             public Mowasla(String Startadress, System.String Endadress, List<Vector> Pointsposition)
@@ -30,9 +30,7 @@ namespace wasalney.Mwasala
         { }
             public async Task<MapRouteView> getLine(int i)
             {
-                MapPolyline shape1 = new MapPolyline();
-
-                
+                              
             if (i != 0)
             {
                 Geopoint startPoint = new Geopoint(new BasicGeoposition() { Latitude = Pointsposition.ElementAt(i-1).getLatitude(), Longitude = Pointsposition.ElementAt(i-1).getLongtitude() });
@@ -41,13 +39,12 @@ namespace wasalney.Mwasala
                 MapRouteFinderResult Route = await MapRouteFinder.GetWalkingRouteAsync(startPoint, endPoint);
                 MapRouteView viewOfRoute = new MapRouteView(Route.Route);
                 viewOfRoute.RouteColor = color;
+                
                 return viewOfRoute;
             }
             return null;
-                
-            
-           
-            }
+
+        }
             public MapPolyline getLine2()
             {
 

@@ -67,9 +67,8 @@ namespace wasalney
         /// a dictionary of state preserved by this page during an earlier
         /// session.  The state will be null the first time a page is visited.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
-        {
-          
-
+        { var obj = App.Current as App;
+            ListItems.ItemsSource = obj.place;
         }
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace wasalney
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
-           
+            Frame.Navigate(typeof(StartMenu));
         }
 
         private void TextInput_TextChanged(object sender, TextChangedEventArgs e)
@@ -123,6 +122,7 @@ namespace wasalney
             {
                 if (v.ElementAt(i).IndexOf(TextInput.Text, StringComparison.CurrentCultureIgnoreCase) != -1) {
                     ListItems.Items.Add((v.ElementAt(i)));
+                  
                 }
             }
             
@@ -130,9 +130,11 @@ namespace wasalney
             }
 
         private void ListItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {if(ListItems.SelectedItem!=null)
-            te.Text = ListItems.SelectedItem.ToString();
+        {if (ListItems.SelectedItem != null)
+            {
+                te.Text = ListItems.SelectedItem.ToString();
+                Frame.Navigate(typeof(Search1), ListItems.SelectedIndex);
+            }
         }
     }
 }
-+

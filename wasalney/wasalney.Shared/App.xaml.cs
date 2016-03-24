@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using wasalney.Mwasala;
+using wasalney.Utl;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -27,7 +29,7 @@ namespace wasalney
         // This MobileServiceClient has been configured to communicate with the Azure Mobile App.
         // You're all set to start working with your Mobile App!
         public static MobileServiceClient MobileService = new MobileServiceClient(
-            "https://wasalney.azurewebsites.net"            
+             "https://woasalney.azurewebsites.net"
         );
 
         
@@ -45,6 +47,9 @@ namespace wasalney
 #endif
         }
         public double dist { get; internal set; }
+        public List<Mowasla> mowasla=new List<Mowasla>();
+        public List<Vector> pos = new List<Vector>();
+        public List<String> place = new List<String>();
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used such as when the application is launched to open a specific file.

@@ -19,5 +19,7 @@ namespace wasalney
         public string place { get; set; }
         [JsonProperty(PropertyName = "iden")]
         public int iden { get; set; }
+        [JsonProperty(PropertyName = "Type")]
+        public string Type { get; set; }
     }
 }

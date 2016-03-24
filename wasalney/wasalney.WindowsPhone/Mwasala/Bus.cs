@@ -17,6 +17,7 @@ namespace wasalney.Mwasala
 
 
         }
-
+        public Bus():base()
+        { this.color = Colors.Blue; }
     }
 }

@@ -24,14 +24,13 @@
 
         <!-- Title Panel -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
-            <TextBlock Text="MY APPLICATION" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
+            <Button x:Name="button" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Click="button_Click"/>
         </StackPanel>
 
         <!--TODO: Content should be placed within the following grid-->
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
+            <Maps:MapControl x:Name="Map" Margin="0"/>
 
-            <ListView x:Name="places_menu" Height="100" Margin="0" Width="100"/>
-            <Maps:MapControl x:Name="Map" HorizontalAlignment="Left" Margin="74,38,0,0" VerticalAlignment="Top"/>
 
         </Grid>
     </Grid>

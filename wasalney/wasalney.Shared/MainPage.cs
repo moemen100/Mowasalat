@@ -22,20 +22,21 @@ using Windows.UI.Xaml.Controls.Maps;
 using wasalney.Mwasala;
 using wasalney.Utl;
 
-
+using Microsoft.WindowsAzure.MobileServices.SQLiteStore;
+using Microsoft.WindowsAzure.MobileServices.Sync;
+using Windows.Services.Maps;
 // To add offline sync support, add the NuGet package Microsoft.WindowsAzure.MobileServices.SQLiteStore
 // to your project. Then, uncomment the lines marked // offline sync
 // For more information, see: http://aka.ms/addofflinesync
-//using Microsoft.WindowsAzure.MobileServices.SQLiteStore;  // offline sync
-//using Microsoft.WindowsAzure.MobileServices.Sync;         // offline sync
+// offline sync
 
 namespace wasalney
 {
     sealed partial class MainPage: Page
     {
         private MobileServiceCollection<Mowaslat, Mowaslat> items;
-        private IMobileServiceTable<Mowaslat> todoTable = App.MobileService.GetTable<Mowaslat>();
-        //private IMobileServiceSyncTable<TodoItem> todoTable = App.MobileService.GetSyncTable<TodoItem>(); // offline sync
+        //private IMobileServiceTable<Mowaslat> todoTable = App.MobileService.GetTable<Mowaslat>();
+        private IMobileServiceSyncTable<Mowaslat> todoTable = App.MobileService.GetSyncTable<Mowaslat>(); // offline sync
 
         public MainPage()
         {
@@ -49,66 +50,144 @@ namespace wasalney
             await todoTable.InsertAsync(todoItem);
            // items.Add(todoItem);
 
-            //await SyncAsync(); // offline sync
+          //  await SyncAsync(); // offline sync
         }
         private async void Sync_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            try
+            // try
+            //{
+
+            // if(items.Last().Id.Equals(//count of the list on the file)-1)
+            //{ MessageDialog error = new MessageDialog("You are updated to our last data base").ShowAsync();
+            //            return;       }
+            //  for (int i = L1.Count; i < items.Count; i++)
+            //{
+
+            //  L1.Add(new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude, items.ElementAt(i).place));
+
+            //                }
+            //              line1 = new Mashroo3("Ma7tta", "sedipashr", L1);
+
+            //        }
+            //      catch (System.Net.Http.HttpRequestException)
+            //    {
+            //      await new MessageDialog("No Connection").ShowAsync();
+            //}
+            //catch (MobileServiceInvalidOperationException)
+            //{
+            //  await new MessageDialog("Error loading items").ShowAsync();
+            //}
+
+
+            // Prevent extra clicking while Push is in progress
+            this.IsEnabled = false;
+            pr.IsActive = true;
+            try { await App.MobileService.SyncContext.PushAsync(); }
+            catch (System.Net.Http.HttpRequestException)
             {
-                items = await todoTable
-                   .Where(todoItem => todoItem.Complete == false)
-                   .ToCollectionAsync();
-                // if(items.Last().Id.Equals(//count of the list on the file)-1)
-                //{ MessageDialog error = new MessageDialog("You are updated to our last data base").ShowAsync();
-                //            return;       }
-                for (int i = L1.Count; i < items.Count; i++)
-                {
-
-                    L1.Add(new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude, items.ElementAt(i).place));
-
-                }
-                line1 = new Mashroo3("Ma7tta", "sedipashr", L1);
-
+                this.IsEnabled = true;
+                pr.IsActive = false;
+                await new MessageDialog("No Connection").ShowAsync();
+            }
+            // System.Net.Http.HttpRequestException
+            catch (MobileServiceInvalidOperationException )
+            {
+                this.IsEnabled = true;
+                pr.IsActive = false;
+                await new MessageDialog("Error loading items").ShowAsync();
+            }
+            try
+            { await todoTable.PullAsync("Mowaslat", todoTable.CreateQuery());
+                await new MessageDialog("The ROute is added to Data Base").ShowAsync();
             }
             catch (System.Net.Http.HttpRequestException)
             {
+                this.IsEnabled = true;
+                pr.IsActive = false;
                 await new MessageDialog("No Connection").ShowAsync();
             }
-            catch (MobileServiceInvalidOperationException)
+            // System.Net.Http.HttpRequestException
+            catch (MobileServiceInvalidOperationException )
             {
+                this.IsEnabled = true;
+                pr.IsActive = false;
                 await new MessageDialog("Error loading items").ShowAsync();
             }
+           await RefreshTodoItems();
+            this.IsEnabled = true;
+            pr.IsActive = false;
+          
+            
+        
 
 
-
-        }
+    }
         private async Task RefreshTodoItems()
         {
-            
+            var obj = App.Current as App;
+            Mowasla m = new Mowasla();
+            int temp = 0;
             try
             {
                 // This code refreshes the entries in the list view by querying the TodoItems table.
                 // The query excludes completed TodoItems.
+
                 items = await todoTable
-                    .Where(todoItem => todoItem.Complete == false)
-                    . ToCollectionAsync();
-               // ListItems.ItemsSource = items;
-                for(int i=0; i<items.Count;i++)
-                {
-                    L1.Add(new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude,items.ElementAt(i).place));
+                    .Where(Mowaslat => Mowaslat.Complete == false)
+                    .ToCollectionAsync();
+                              
+                for (int i = 0; i <items.Count;i++)
+                {if (items.ElementAt(i).iden == 0)
+                    {
+                        if (items.ElementAt(i).Type != null)
+                        {
+                            if (items.ElementAt(i).Type.Equals("Bus"))
+                                m = new Bus();
+                            if (items.ElementAt(i).Type.Equals("mashroo3"))
+                                m = new Mashroo3();
+                            else
+                                m = new Mowasla();
+                        }
+                        else
+                            m = new Mowasla();
+                        m.Pointsposition = new List<Vector>();
+                        obj.pos.Add((new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude, items.ElementAt(i).place)));
+                        obj.place.Add(items.ElementAt(i).place);
+                        m.Pointsposition.Add(new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude, items.ElementAt(i).place));
+                        m.Startadress = items.ElementAt(i).place;
+                    }
+                    if (items.ElementAt(i).iden == 1)
+                    {
+                        obj.pos.Add((new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude, items.ElementAt(i).place)));
+                        obj.place.Add(items.ElementAt(i).place);
+                        m.Pointsposition.Add(new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude, items.ElementAt(i).place));
+                        Map.Routes.Add(await m.getLine(i- temp));
+                    }
+                    if (items.ElementAt(i).iden == 2)
+                    {
+                        obj.pos.Add((new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude, items.ElementAt(i).place)));
+                        obj.place.Add(items.ElementAt(i).place);
+                        m.Pointsposition.Add(new Vector(items.ElementAt(i).Latitude, items.ElementAt(i).Longtude, items.ElementAt(i).place));
+                        Map.Routes.Add(await m.getLine(i- temp));
+                        m.Endadress = items.ElementAt(i).place;
+                        obj.mowasla.Add(m);
+                        temp = i+1;
+                    }
 
                 }
-                line1 = new Mashroo3("Ma7tta", "sedipashr", L1);
-                Map.MapElements.Add(line1.getLine2());
-              //  this.ButtonSave.IsEnabled = true;
+                //  this.ButtonSave.IsEnabled = true;
             }
             catch (System.Net.Http.HttpRequestException )
             {
+                this.IsEnabled = true;
+                pr.IsActive = false;
                 await new MessageDialog("No Connection").ShowAsync();
             }
             // System.Net.Http.HttpRequestException
             catch (MobileServiceInvalidOperationException e )
             {
+                this.IsEnabled = true;
+                pr.IsActive = false;
                 await new MessageDialog( "Error loading items").ShowAsync();
             }
            
@@ -124,14 +203,14 @@ namespace wasalney
             items.Remove(item);
            // ListItems.Focus(Windows.UI.Xaml.FocusState.Unfocused);
 
-            //await SyncAsync(); // offline sync
+         //  await SyncAsync(); // offline sync
         }
 
         private async void ButtonRefresh_Click(object sender, RoutedEventArgs e)
         {
             //ButtonRefresh.IsEnabled = false;
 
-            //await SyncAsync(); // offline sync
+          // await SyncAsync(); // offline sync
           //  await RefreshTodoItems();
 
             //ButtonRefresh.IsEnabled = true;
@@ -159,81 +238,81 @@ namespace wasalney
         private List<Vector> L1 = new List<Vector>();
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            // Geolocator geolocator = new Geolocator();
-            //  geolocator.DesiredAccuracyInMeters = 50;
-            //   try
-            //   {
-            //      Geoposition postionlocator = await geolocator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
-            //   await Map.TrySetViewAsync(postionlocator.Coordinate.Point, 18D);
-            //  }
-            // catch (UnauthorizedAccessException)
-            // {
-            // MessageDialog error = new MessageDialog("Location is disabled in phone setting");
-            //  await error.ShowAsync();
-            // }
-            //***********************************
-            int i=0;
-            // L1.Add(new Vector(31.1982571669281, 29.9168192688971, "ss"));
-            // L1.Add(new Vector(31.2195221020255, 29.9424814515894, "ss"));
-            // L1.Add(new Vector(31.2326330949089, 29.9572216672541, "ss"));
-            // L1.Add(new Vector(31.238086066003, 29.9623003162132, "ss"));
-            // L1.Add(new Vector(31.2395920411529, 29.964234863754, "ss"));
-            // L1.Add(new Vector(31.2414903192683, 29.9673884172723, "ss"));
-            // L1.Add(new Vector(31.2434731932479, 29.9701884334006, "ss"));
-            // L1.Add(new Vector(31.2455164771495, 29.9738086562737, "ss"));
-            //   foreach (Vector v in L1)
-            // {
-
-            //   if (L1.IndexOf(v) == 0)
-            //  {
-            //    var todoItem = new Mowaslat { place = v.name, Latitude = v.getLatitude(), Longtude = v.getLongtitude(), Complete = false, Id = i.ToString(), iden = 0 };
-            //  await InsertTodoItem(todoItem);
-            //}
-            // if (L1.IndexOf(v) == L1.Count-1)
-            // {
-            //   var todoItem = new Mowaslat { place = v.name, Latitude = v.getLatitude(), Longtude = v.getLongtitude(), Complete = false, Id = i.ToString(), iden = 2 };
-            //  await InsertTodoItem(todoItem);
-            //}
-            //if (L1.IndexOf(v) != 0&& L1.IndexOf(v) != L1.Count - 1)
-
-            //                {
-            //                  var todoItem = new Mowaslat { place = v.name, Latitude = v.getLatitude(), Longtude = v.getLongtitude(), Complete = false, Id =i.ToString() , iden = 1 };
-            //                await InsertTodoItem(todoItem);
-            //          }
-            //        i++;
-            //
-            //  }
-            //await new MessageDialog("finished adding").ShowAsync();
-
-
-           
-            
-            var obj = App.Current as App;
-         //   distance.Text = "Distance" + obj.dist;
-            //await InitLocalStoreAsync(); // offline sync
+            this.IsEnabled = false;
+            pr.IsActive = true;
+            if (!App.MobileService.SyncContext.IsInitialized)
+            {
+              var store = new MobileServiceSQLiteStore("localsync.db");
+            store.DefineTable<Mowaslat>();
+           await App.MobileService.SyncContext.InitializeAsync(store, new SyncHandler(App.MobileService));
+            }
+            Geolocator geolocator = new Geolocator();
+            geolocator.DesiredAccuracyInMeters = 50;
+            try
+            {
+                Geoposition postionlocator = await geolocator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
+                await Map.TrySetViewAsync(postionlocator.Coordinate.Point, 18D);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                this.IsEnabled = true;
+                pr.IsActive = false;
+                MessageDialog error = new MessageDialog("Location is disabled in phone setting");
+                await error.ShowAsync();
+            }
             await RefreshTodoItems();
+            //   distance.Text = "Distance" + obj.dist;
+            //  await InitLocalStoreAsync(); // offline sync
+           
+            this.IsEnabled = true;
+            pr.IsActive = false; 
         }
 
         #region Offline sync
 
-        //private async Task InitLocalStoreAsync()
+        // private async Task InitLocalStoreAsync()
         //{
-        //    if (!App.MobileService.SyncContext.IsInitialized)
-        //    {
-         //      var store = new MobileServiceSQLiteStore("localstore.db");
-        //        store.DefineTable<TodoItem>();
-        //        await App.MobileService.SyncContext.InitializeAsync(store);
-        //    }
-        //
-        //    await SyncAsync();
+        //  await new MessageDialog("No Connection").ShowAsync();
+
+        //if (!App.MobileService.SyncContext.IsInitialized)
+        //{
+        //  var store = new MobileServiceSQLiteStore("localstore.db");
+        //store.DefineTable<Mowaslat>();
+        // await App.MobileService.SyncContext.InitializeAsync(store);
         //}
 
-        //private async Task SyncAsync()
-        //{
-        //    await App.MobileService.SyncContext.PushAsync();
-        //    await todoTable.PullAsync("todoItems", todoTable.CreateQuery());
-        //}
+        //await SyncAsync();
+        //        }
 
-        #endregion 
+        private void Optin_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {if (Ca.Visibility == Visibility.Visible)
+            Ca.Visibility = Visibility.Collapsed;
+            if (Ca.Visibility == Visibility.Collapsed)
+                Ca.Visibility = Visibility.Visible;
+
+        }
+        private void button_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {if (Normal.IsChecked == true)
+                Map.Style = MapStyle.Terrain;
+            if (Online.IsChecked == true)
+            {
+                var httpsource = new HttpMapTileDataSource("http://a.tile.openstreetmap.org/{zoomlevel}/{x}/{y}.png");
+                var ts = new MapTileSource(httpsource)
+                {
+                    Layer = MapTileLayer.BackgroundReplacement
+                };
+                Map.Style = MapStyle.None;
+                Map.TileSources.Add(ts);
+               
+            }
+            
+                if (Aeriel.IsChecked == true)
+                {
+                    Map.Style = MapStyle.Aerial;
+                }
+            Ca.Visibility = Visibility.Collapsed;
+        }
+
+        #endregion
     }
 }

@@ -17,6 +17,8 @@ namespace wasalney.Mwasala
 
 
         }
+        public Mashroo3():base()
+        { this.color = Colors.Blue; }
 
     }
 }
