@@ -133,7 +133,7 @@ namespace wasalney
                 // The query excludes completed TodoItems.
 
                 items = await todoTable
-                    .Where(Mowaslat => Mowaslat.Complete == false)
+                    .Where(Mowaslat => Mowaslat.Complete == true)
                     .ToCollectionAsync();
                               
                 for (int i = 0; i <items.Count;i++)
@@ -250,8 +250,12 @@ namespace wasalney
             geolocator.DesiredAccuracyInMeters = 50;
             try
             {
-                Geoposition postionlocator = await geolocator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
-                await Map.TrySetViewAsync(postionlocator.Coordinate.Point, 18D);
+                 //Geoposition postionlocator = await geolocator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
+                // await Map.TrySetViewAsync(postionlocator.Coordinate.Point, 18D);
+                BasicGeoposition myPosition = new BasicGeoposition();
+                myPosition.Latitude = 31.1982571669281;/// add the point you where you want the map to be directed to when click get location if gps didn't work on your app
+                myPosition.Longitude = 29.9168192688971;
+                await Map.TrySetViewAsync(new Geopoint(myPosition),18D);
             }
             catch (UnauthorizedAccessException)
             {

@@ -103,9 +103,13 @@ namespace wasalney
              Vector Start=new Vector();
             try
             {
-                Geoposition postionlocator = await geolocator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
-                 Start = new Vector(postionlocator.Coordinate.Point.Position.Latitude, postionlocator.Coordinate.Point.Position.Longitude, "");
-                await Map.TrySetViewAsync(postionlocator.Coordinate.Point, 18D);
+                //  Geoposition postionlocator = await geolocator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
+                // Start = new Vector(postionlocator.Coordinate.Point.Position.Latitude, postionlocator.Coordinate.Point.Position.Longitude, "");
+                //await Map.TrySetViewAsync(postionlocator.Coordinate.Point, 18D);
+                BasicGeoposition myPosition = new BasicGeoposition();
+                myPosition.Latitude = 31.1982571669281;/// add the point you where you want the map to be directed to when click get location if gps didn't work on your app
+                myPosition.Longitude = 29.9168192688971;
+                await Map.TrySetViewAsync(new Geopoint(myPosition), 18D);
             }
             catch (UnauthorizedAccessException)
             {
@@ -120,81 +124,145 @@ namespace wasalney
             double dist = 0;
             double diste = 0;
             Vector near=new Vector();
+            Vector V = new Vector();
             Vector neare;
             bool reached = false;
             foreach (Mowasla M in k)
             {
-                foreach (Vector V in M.Pointsposition)
-                {
-                    if (dist == 0)
-                        dist = V.distancevector(Start);
-                    if (V.distancevector(Start) <= dist || dist < 350)
-                    {
 
-                        if (open.Count != 0 && (int)dist != (int)V.distancevector(Start) && dist > 350)
-                            open.Dequeue();
+                foreach (BasicGeoposition g in M.viewOfRoute2)
+                         {
+                    V = new Vector(g.Latitude, g.Longitude, "");
+                if (dist == 0)
+                  dist = V.distancevector(Start);
+            if (V.distancevector(Start) <= dist || dist < 350)
+          {
+
+                   if (open.Count != 0 && (int)dist != (int)V.distancevector(Start) && dist > 350)
+                     open.Dequeue();
+                    if (!open.Contains(M))
                         open.Enqueue(M);
-                        dist = V.distancevector(Start);
+                dist = V.distancevector(Start);
+                    if (open.Contains(M))
                         near = V;
 
-                    }
-
-                    if (diste == 0)
-                        diste = V.distancevector(end);
-
-                    if (V.distancevector(end) <= diste || diste < 350)
-                    {
-
-                        if (open2.Count != 0 && (int)diste != (int)V.distancevector(end) && diste > 350)
-                            open2.Dequeue();
-                        open2.Enqueue(M);
-                        diste = V.distancevector(end);
-                        neare = V;
-
-
-                    }
-
-
                 }
+
+                                    if (diste == 0)
+                                      diste = V.distancevector(end);
+                
+                                if (V.distancevector(end) <= diste || diste < 350)
+                              {
+
+                                if (open2.Count != 0 && (int)diste != (int)V.distancevector(end) && diste > 350)
+                                  open2.Dequeue();
+                                if(!open2.Contains(M))
+                            open2.Enqueue(M);
+                          diste = V.distancevector(end);
+                    if(open2.Contains(M))
+                    neare = V;
+
+
+                  }
+
+
+               }
             }
             dist = 0;
             int i = 0;
-            Vector near2 = new Vector();
+         //   Vector near2 = new Vector();
             foreach (Mowasla have in open2)
                 if (open.Contains(have))
                 {
                     foreach (Vector v in have.Pointsposition)
                     {
-                        if (near2.distancevector(Start) > v.distancevector(Start) || i==0)
-                        {
+                     //   if (near2.distancevector(Start) > v.distancevector(Start) || i==0)
+                       // {
                            
-                            near2 = v;
+                         //   near2 = v;
                            
-                        }
+                        //}
                        
                         if (i != 0)
                             Map.Routes.Add(await have.getLine(i));
                         i++;
-                       // dist = v.distancevector(Start);
+                        dist = v.distancevector(Start);
                     }
-                    i = 0;
-                    //Geopoint startPoint = new Geopoint(new BasicGeoposition() { Latitude  = Start.getLatitude(), Longitude = Start.getLongtitude() });
+                     
+        i = 0;
+        MapRouteFinderResult Route = await MapRouteFinder.GetWalkingRouteAsync(new Geopoint(new BasicGeoposition() { Latitude = Start.getLatitude(), Longitude = Start.getLongtitude() }),
 
-                    //Geopoint endPoint = new Geopoint(new BasicGeoposition() { Latitude = near.getLatitude(), Longitude = near.getLongtitude() });
-                    //MapRouteFinderResult Route1 = await MapRouteFinder.GetWalkingRouteAsync(startPoint, endPoint);
-                    //MapRouteView viewOfRoute1 = new MapRouteView(Route1.Route);
-                    //viewOfRoute1.RouteColor = Colors.Gray; ;
-                    //  Map.Routes.Add(viewOfRoute1);
-                    //  for (int j = 1; j < have.Pointsposition.Count-1; j++)
-                    //  Map.Routes.Add( await have.getLine(j));
-                    MapRouteFinderResult Route = await MapRouteFinder.GetWalkingRouteAsync(new Geopoint(new BasicGeoposition() { Latitude = Start.getLatitude(), Longitude = Start.getLongtitude() }),
-
-           new Geopoint(new BasicGeoposition() { Latitude = near2.getLatitude(), Longitude = near2.getLongtitude() }));
-                    MapRouteView viewOfRoute = new MapRouteView(Route.Route);
-                    viewOfRoute.RouteColor = Colors.Black;
+        new Geopoint(new BasicGeoposition() { Latitude = near.getLatitude(), Longitude = near.getLongtitude() }));
+        //    
+        MapRouteView viewOfRoute = new MapRouteView(Route.Route);
+                   viewOfRoute.RouteColor = Colors.Black;
                     Map.Routes.Add(viewOfRoute);
+                    reached = true;
+                    
                 }
-           
+          
+            if (reached == false)
+            {
+                foreach (Mowasla M in open2)
+                {
+                    foreach(Mowasla Av in open)
+                    {
+                       if( Av.viewOfRoute2.Intersect(M.viewOfRoute2).Count()>0)
+
+                     {
+                            foreach (Vector v in Av.Pointsposition)
+                            {
+                                //   if (near2.distancevector(Start) > v.distancevector(Start) || i==0)
+                                // {
+
+                                //   near2 = v;
+
+                                //}
+
+                                if (i != 0)
+                                {
+                                    Map.Routes.Add(await Av.getLine(i));
+                                }
+                                    i++;
+                               // dist = v.distancevector(Start);
+
+
+                            }
+                            foreach (Vector v in M.Pointsposition)
+                            {
+                                //   if (near2.distancevector(Start) > v.distancevector(Start) || i==0)
+                                // {
+
+                                //   near2 = v;
+
+                                //}
+
+                                if (i != 0)
+                                {
+                                    Map.Routes.Add(await M.getLine(i));
+                                }
+                                i++;
+                                // dist = v.distancevector(Start);
+
+
+                            }
+                        }
+                    }
+
+
+                }
+
+               
+                MapRouteFinderResult Route = await MapRouteFinder.GetWalkingRouteAsync(new Geopoint(new BasicGeoposition() { Latitude = Start.getLatitude(), Longitude = Start.getLongtitude() }),
+
+new Geopoint(new BasicGeoposition() { Latitude = near.getLatitude(), Longitude = near.getLongtitude() }));
+                
+                MapRouteView viewOfRoute = new MapRouteView(Route.Route);
+                viewOfRoute.RouteColor = Colors.Black;
+                Map.Routes.Add(viewOfRoute);
+                reached = true;
+
+            }
 
 
 

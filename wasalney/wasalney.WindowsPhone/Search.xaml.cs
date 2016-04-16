@@ -68,7 +68,11 @@ namespace wasalney
         /// session.  The state will be null the first time a page is visited.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         { var obj = App.Current as App;
-            ListItems.ItemsSource = obj.place;
+            v = obj.place;
+            foreach (String s in obj.place)
+            {
+                ListItems.Items.Add(s);
+            }
         }
 
         /// <summary>

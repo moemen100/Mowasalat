@@ -90,19 +90,22 @@ namespace wasalney
             geolocator.DesiredAccuracyInMeters = 50;
             try
             {
-                Geoposition postionlocator = await geolocator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
-                await map.TrySetViewAsync(postionlocator.Coordinate.Point, 18D);
-
+                //Geoposition postionlocator = await geolocator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
+                // await map.TrySetViewAsync(postionlocator.Coordinate.Point, 18D);
+                BasicGeoposition myPosition = new BasicGeoposition();
+                myPosition.Latitude = 31.1982571669281;/// add the point you where you want the map to be directed to when click get location if gps didn't work on your app
+                myPosition.Longitude = 29.9168192688971;
+                await map.TrySetViewAsync(new Geopoint(myPosition),18D);
 
             }
             catch (UnauthorizedAccessException)
             {
                 MessageDialog error = new MessageDialog("Location is disabled in phone setting we will Move the map to a Location in alex");
                 await error.ShowAsync();
-                var myPosition = new Windows.Devices.Geolocation.BasicGeoposition();
-                myPosition.Latitude = 31.1982571669281;/// add the point you where you want the map to be directed to when click get location if gps didn't work on your app
-                myPosition.Longitude = 29.9168192688971;
-                var myPoint = new Windows.Devices.Geolocation.Geopoint(myPosition);
+             //   var myPosition = new Windows.Devices.Geolocation.BasicGeoposition();
+               // myPosition.Latitude = 31.1982571669281;/// add the point you where you want the map to be directed to when click get location if gps didn't work on your app
+                //myPosition.Longitude = 29.9168192688971;
+                //var myPoint = new Windows.Devices.Geolocation.Geopoint(myPosition);
 
             }
             if (!App.MobileService.SyncContext.IsInitialized)
@@ -152,7 +155,7 @@ namespace wasalney
         }
 
         #endregion
-        String Type;
+        String Type= "other";
         private void DeleteLast_Click(object sender, RoutedEventArgs e)
         {
             if (map.MapElements.Count != 0)
@@ -226,8 +229,7 @@ namespace wasalney
 
             }
 
-            await new MessageDialog("The ROute is added to Data Base").ShowAsync();
-            await Push();
+           // await Push();
             Frame.Navigate(typeof(StartMenu));
         }
 
@@ -363,7 +365,6 @@ namespace wasalney
                 await d.ShowAsync();
             }
 
-            await new MessageDialog("The ROute is added to Data Base").ShowAsync();
         }
         private void Optin_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
@@ -401,20 +402,14 @@ namespace wasalney
                 Type = "mashroo3";
             if (Bus.IsChecked == true)
             {
-                var httpsource = new HttpMapTileDataSource("http://a.tile.openstreetmap.org/{zoomlevel}/{x}/{y}.png");
-                var ts = new MapTileSource(httpsource)
-                {
-                    Layer = MapTileLayer.BackgroundReplacement
-                };
-                map.Style = MapStyle.None;
-                map.TileSources.Add(ts);
+               
                 Type = "Bus";
             }
 
             if (Other.IsChecked == true)
             {
-                map.Style = MapStyle.Aerial;
-                Type = "other";
+               
+                Type = "Other";
             }
             map.Style = MapStyle.Terrain;
             Ca2.Visibility = Visibility.Collapsed;

@@ -13,7 +13,7 @@ namespace wasalney.Mwasala
     {
         public class Mowasla
         {
-
+        public  List<BasicGeoposition> viewOfRoute2=new List<BasicGeoposition>();
         public String Endadress;
         public String Startadress;
              public List<Vector> Pointsposition;
@@ -30,16 +30,20 @@ namespace wasalney.Mwasala
         { }
             public async Task<MapRouteView> getLine(int i)
             {
-                              
+
             if (i != 0)
             {
-                Geopoint startPoint = new Geopoint(new BasicGeoposition() { Latitude = Pointsposition.ElementAt(i-1).getLatitude(), Longitude = Pointsposition.ElementAt(i-1).getLongtitude() });
-                
+                Geopoint startPoint = new Geopoint(new BasicGeoposition() { Latitude = Pointsposition.ElementAt(i - 1).getLatitude(), Longitude = Pointsposition.ElementAt(i - 1).getLongtitude() });
+
                 Geopoint endPoint = new Geopoint(new BasicGeoposition() { Latitude = Pointsposition.ElementAt(i).getLatitude(), Longitude = Pointsposition.ElementAt(i).getLongtitude() });
                 MapRouteFinderResult Route = await MapRouteFinder.GetWalkingRouteAsync(startPoint, endPoint);
+
                 MapRouteView viewOfRoute = new MapRouteView(Route.Route);
                 viewOfRoute.RouteColor = color;
-                
+                //  viewOfRoute.OutlineColor = Colors.Black; 
+                // MapPolyline shape = new MapPolyline();
+                //shape.Path = Route.Route.Path;
+                viewOfRoute2.AddRange(Route.Route.Path.Positions);
                 return viewOfRoute;
             }
             return null;
